@@ -115,9 +115,18 @@ public class SodukuBoard {
 
     void removeNumbers(int remove){
         Random gen = new Random();
+        ArrayList<ArrayList<Integer>> previous = new ArrayList<ArrayList<Integer>>();
         for(int i=0; i<remove; i++){
-            Integer[] location = {gen.nextInt(board.length), gen.nextInt(board[0].length)};
-            board[location[0]][location[1]].setValue();
+            ArrayList<Integer> temp = new ArrayList<Integer>();
+            temp.add(gen.nextInt(board.length));
+            temp.add(gen.nextInt(board[0].length));
+            if(!previous.contains(temp)){
+                previous.add(temp);
+                board[temp.get(0)][temp.get(1)].setValue();
+            }
+            else{
+                i--;
+            }
         }
     }
 
@@ -134,5 +143,15 @@ public class SodukuBoard {
             }
             System.out.println();
         }
+    }
+
+    public ArrayList<Integer> toArray(){
+        ArrayList<Integer> toReturn = new ArrayList<Integer>();
+        for(int i=0; i<9; i++){
+            for(int j=0; j<9; j++){
+                toReturn.add(board[i][i].getValue());
+            }
+        }
+        return toReturn;
     }
 }
