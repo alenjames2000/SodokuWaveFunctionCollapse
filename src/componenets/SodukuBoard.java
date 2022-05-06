@@ -39,6 +39,20 @@ public class SodukuBoard {
         public boolean isSet(){
             return set;
         }
+
+        public void setSetTrue(){
+            set = true;
+        }
+
+        public void reset(){
+            set = false;
+            possibilites = new ArrayList<Integer>(Arrays.asList(1,2,3,4,5,6,7,8,9));
+        }
+    }
+
+    SodukuBoard(int remove){
+        createSolution();
+        removeNumbers(remove);
     }
 
     void populateBoard(){
@@ -91,6 +105,20 @@ public class SodukuBoard {
         return toReturn;
     }
 
+    public int addValues(int number){
+        for(int i=0; i<number; i++){
+            Random gen = new Random();
+            ArrayList<Integer[]> possibilites = getLowestEntropy();
+            Integer[] location = possibilites.get(gen.nextInt(possibilites.size()));
+            int success = board[location[0]][location[1]].setValue(gen);
+            if(success == -1){
+                return success;
+            }
+            propagte(location);
+        }
+        return 0;
+    }
+
     void createSolution(){
         boolean created = false;
         while(!created){
@@ -100,15 +128,8 @@ public class SodukuBoard {
             Integer[] location = {gen.nextInt(board.length), gen.nextInt(board[0].length)};
             board[location[0]][location[1]].setValue(gen);
             propagte(location);
-            for(int i=0; i<80; i++){
-                ArrayList<Integer[]> possibilites = getLowestEntropy();
-                location = possibilites.get(gen.nextInt(possibilites.size()));
-                int success = board[location[0]][location[1]].setValue(gen);
-                if(success == -1){
-                    created = false;
-                    break;
-                }
-                propagte(location);
+            if(addValues(80) == -1){
+                created = false;
             }
         }
     }
@@ -130,9 +151,31 @@ public class SodukuBoard {
         }
     }
 
-    SodukuBoard(int remove){
-        createSolution();
-        removeNumbers(remove);
+    void resetTiles(){
+        for(int i=0; i<9; i++){
+            for(int j=0; j<9; j++){
+                board[i][j].reset();
+            }
+        }
+    }
+
+    int propagateSet(){
+        int sets = 0;
+        for(int i=0; i<9; i++){
+            for(int j=0; j<9; j++){
+                if(board[i][j].getValue() != 0){
+                    board[i][j].setSetTrue();
+                    propagte(new Integer[]{i,j});
+                    sets++;
+                }
+            }
+        }
+        return sets;
+    }
+
+    public void solve(){
+        resetTiles();
+        while(addValues(81 - propagateSet()) != 0);
     }
 
     public void printBoard(){
