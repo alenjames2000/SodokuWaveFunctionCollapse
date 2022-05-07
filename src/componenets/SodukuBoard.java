@@ -14,6 +14,10 @@ public class SodukuBoard {
 
         }
 
+        Tile(int value){
+            this.value = value;
+        }
+
         Tile(Tile tile){
             this.value = tile.getValue();
             this.set = tile.isSet();
@@ -69,6 +73,10 @@ public class SodukuBoard {
         removeNumbers(remove);
     }
 
+    SodukuBoard(int [] boardV) {
+        populateBoard(boardV);
+    }
+
     SodukuBoard(SodukuBoard board) {
         revert(board);
     }
@@ -89,6 +97,14 @@ public class SodukuBoard {
         for(int i=0; i<9; i++){
             for(int j=0; j<9; j++){
                 board[i][j] = new Tile();
+            }
+        }
+    }
+
+    void populateBoard(int[] boardValue){
+        for(int i=0; i<9; i++){
+            for(int j=0; j<9; j++){
+                board[i][j] = new Tile(boardValue[i*9+j]);
             }
         }
     }
@@ -168,6 +184,7 @@ public class SodukuBoard {
                 }
             }
         }
+        revert(temp);
         return -1;
     }
 
@@ -208,9 +225,11 @@ public class SodukuBoard {
     }
 
     public void solve(){
+        int i = 0;
         do{
             resetTiles();
             propagateSet();
+            System.out.println(i++);
         }while(createSolution() != 0);
     }
 
