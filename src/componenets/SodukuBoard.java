@@ -3,13 +3,17 @@ package componenets;
 import java.util.*;
 
 public class SodukuBoard {
+    //Store Board Information
     private Tile[][] board = new Tile[9][9];
 
+    //Nested class to repersent all the tiles
     class Tile{
+        //Instance variables
         int value = 0;
         boolean set = false;
         ArrayList<Integer> possibilites = new ArrayList<Integer>(Arrays.asList(1,2,3,4,5,6,7,8,9));
 
+        //Constructors
         Tile(){
 
         }
@@ -24,6 +28,7 @@ public class SodukuBoard {
             this.possibilites = tile.getPossibilites();
         }
 
+        //Property Modifiers
         public void setValue(int value){
             set = true;
             this.value = value;
@@ -34,11 +39,21 @@ public class SodukuBoard {
         }
 
         public void removePossibility(int toRemove){
-            if(!set){
+            if(!set && value == 0){
                 possibilites.remove((Integer)toRemove);
             }
         }
 
+        public void setSetTrue(){
+            set = true;
+        }
+
+        public void reset(){
+            set = false;
+            possibilites = new ArrayList<Integer>(Arrays.asList(1,2,3,4,5,6,7,8,9));
+        }
+
+        // Property Getters
         public int getValue(){
             return value;
         }
@@ -54,17 +69,9 @@ public class SodukuBoard {
         public boolean isSet(){
             return set;
         }
-
-        public void setSetTrue(){
-            set = true;
-        }
-
-        public void reset(){
-            set = false;
-            possibilites = new ArrayList<Integer>(Arrays.asList(1,2,3,4,5,6,7,8,9));
-        }
     }
 
+    //Board Constructors
     SodukuBoard(int remove){
         populateBoard();
         while(createSolution() != 0){
@@ -77,22 +84,25 @@ public class SodukuBoard {
         populateBoard(boardV);
     }
 
-    SodukuBoard(SodukuBoard board) {
-        revert(board);
+    SodukuBoard(SodukuBoard boardV) {
+        revert(boardV);
     }
 
-    void revert(SodukuBoard board){
-        for(int i=0; i<9; i++){
-            for(int j=0; j<9; j++){
-                this.board[i][j] = new Tile(board.getBoard()[i][j]);
-            }
-        }
-    }
-
+    //Getters
     Tile[][] getBoard(){
         return board;
     }
 
+    //Reverts board to another given board state
+    void revert(SodukuBoard boardNew){
+        for(int i=0; i<9; i++){
+            for(int j=0; j<9; j++){
+                this.board[i][j] = new Tile(boardNew.getBoard()[i][j]);
+            }
+        }
+    }
+
+    //Populate functions which initialize the board with or without values
     void populateBoard(){
         for(int i=0; i<9; i++){
             for(int j=0; j<9; j++){
@@ -109,6 +119,7 @@ public class SodukuBoard {
         }
     }
 
+    // Propagates given choice for the wave function
     int propagte(Integer[] location){
         int toRemove = board[location[0]][location[1]].getValue();
         for(int i=0; i<9; i++){
@@ -137,6 +148,7 @@ public class SodukuBoard {
         return 0;
     }
 
+    //Get lowest entropy tiles locations from the board
     ArrayList<Integer[]> getLowestEntropy(){
         ArrayList<Integer[]> toReturn = new ArrayList<Integer[]>();
         int lowest = 0;
@@ -163,6 +175,7 @@ public class SodukuBoard {
         return toReturn;
     }
 
+    // Recursive function that populates the board with values
     int createSolution(){
         ArrayList<Integer[]> possibilites = getLowestEntropy();
         Collections.shuffle(possibilites);
@@ -173,7 +186,9 @@ public class SodukuBoard {
         else {
             for (int i = 0; i < possibilites.size(); i++) {
                 for (int k = 0; k < board[possibilites.get(i)[0]][possibilites.get(i)[1]].getPossibilites().size(); k++) {
-                    board[possibilites.get(i)[0]][possibilites.get(i)[1]].setValue(board[possibilites.get(i)[0]][possibilites.get(i)[1]].getPossibilites().get(k));
+                    ArrayList<Integer> x = new ArrayList<Integer>(board[possibilites.get(i)[0]][possibilites.get(i)[1]].getPossibilites());
+                    Collections.shuffle(x);
+                    board[possibilites.get(i)[0]][possibilites.get(i)[1]].setValue(x.get(k));
                     if (propagte(possibilites.get(i)) == -1) {
                         revert(temp);
                     } else {
@@ -188,6 +203,7 @@ public class SodukuBoard {
         return -1;
     }
 
+    // Removes values from the board to create a board to solve
     void removeNumbers(int remove){
         Random gen = new Random();
         ArrayList<ArrayList<Integer>> previous = new ArrayList<ArrayList<Integer>>();
@@ -205,6 +221,7 @@ public class SodukuBoard {
         }
     }
 
+    //Sets all tiles to not sets and resets the possibilites for each tile
     void resetTiles(){
         for(int i=0; i<9; i++){
             for(int j=0; j<9; j++){
@@ -213,6 +230,7 @@ public class SodukuBoard {
         }
     }
 
+    //Propagates all values that have been set on a board
     void propagateSet(){
         for(int i=0; i<9; i++){
             for(int j=0; j<9; j++){
@@ -224,8 +242,9 @@ public class SodukuBoard {
         }
     }
 
+    //Solves the current board
     public void solve(){
-        int i = 0;
+        int i = 1;
         do{
             resetTiles();
             propagateSet();
@@ -233,6 +252,7 @@ public class SodukuBoard {
         }while(createSolution() != 0);
     }
 
+    //Prints the current board
     public void printBoard(){
         for(int i=0; i<9; i++){
             for(int j=0; j<9; j++){
@@ -243,6 +263,7 @@ public class SodukuBoard {
         }
     }
 
+    //Converts the board to an array of ints
     public ArrayList<Integer> toArray(){
         ArrayList<Integer> toReturn = new ArrayList<Integer>();
         for(int i=0; i<9; i++){
