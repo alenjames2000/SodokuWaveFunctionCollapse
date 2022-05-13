@@ -2,21 +2,21 @@ package componenets;
 
 import javax.swing.*;
 
-public class SodokuMain {
+public class App {
     private static void createAndShowGUI() {
         //Create and set up the window.
         JFrame frame = new JFrame("Sodoku");
-        frame.setSize(640,480);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        //Add the ubiquitous "Hello World" label.
-        JLabel label = new JLabel("Hello World");
-        label.setBounds(300,300,10,10);
-        frame.add(label);
+        //Add Board
+        Board board = new Board();
+        frame.add(board);
+        frame.addKeyListener(board);
 
         //Display the window.
-//        frame.pack();
-        frame.setLayout(null);
+        frame.setResizable(false);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 

@@ -6,71 +6,6 @@ public class SodukuBoard {
     //Store Board Information
     private Tile[][] board = new Tile[9][9];
 
-    //Nested class to repersent all the tiles
-    class Tile{
-        //Instance variables
-        int value = 0;
-        boolean set = false;
-        ArrayList<Integer> possibilites = new ArrayList<Integer>(Arrays.asList(1,2,3,4,5,6,7,8,9));
-
-        //Constructors
-        Tile(){
-
-        }
-
-        Tile(int value){
-            this.value = value;
-        }
-
-        Tile(Tile tile){
-            this.value = tile.getValue();
-            this.set = tile.isSet();
-            this.possibilites = tile.getPossibilites();
-        }
-
-        //Property Modifiers
-        public void setValue(int value){
-            set = true;
-            this.value = value;
-        }
-
-        public void resetValue(){
-            value = 0;
-        }
-
-        public void removePossibility(int toRemove){
-            if(!set && value == 0){
-                possibilites.remove((Integer)toRemove);
-            }
-        }
-
-        public void setSetTrue(){
-            set = true;
-        }
-
-        public void reset(){
-            set = false;
-            possibilites = new ArrayList<Integer>(Arrays.asList(1,2,3,4,5,6,7,8,9));
-        }
-
-        // Property Getters
-        public int getValue(){
-            return value;
-        }
-
-        public ArrayList<Integer> getPossibilites(){
-            return possibilites;
-        }
-
-        public int getPossibilitySize(){
-            return possibilites.size();
-        }
-
-        public boolean isSet(){
-            return set;
-        }
-    }
-
     //Board Constructors
     SodukuBoard(int remove){
         populateBoard();
@@ -106,7 +41,7 @@ public class SodukuBoard {
     void populateBoard(){
         for(int i=0; i<9; i++){
             for(int j=0; j<9; j++){
-                board[i][j] = new Tile();
+                board[i][j] = new Tile(i,j);
             }
         }
     }
@@ -114,7 +49,7 @@ public class SodukuBoard {
     void populateBoard(int[] boardValue){
         for(int i=0; i<9; i++){
             for(int j=0; j<9; j++){
-                board[i][j] = new Tile(boardValue[i*9+j]);
+                board[i][j] = new Tile(i, j, boardValue[i*9+j]);
             }
         }
     }
@@ -219,6 +154,8 @@ public class SodukuBoard {
                 i--;
             }
         }
+        resetTiles();
+        propagateSet();
     }
 
     //Sets all tiles to not sets and resets the possibilites for each tile
